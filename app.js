@@ -3,6 +3,7 @@ const path = require("path");
 const cookieParser = require("cookie-parser");
 const logger = require("morgan");
 const cors = require("cors");
+const connectDB = require("./utils/db");
 
 const indexRouter = require("./routes/index");
 const authRouter = require("./routes/auth/v1/auth");
@@ -19,7 +20,12 @@ app.use(cookieParser());
 app.use(cors());
 app.options("*", cors());
 
+// connect database
+connectDB();
 app.use("/", indexRouter);
+
+
+// routes
 app.use("/api/auth/v1", authRouter);
 
 module.exports = app;

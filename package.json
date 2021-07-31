@@ -4,8 +4,8 @@
   "private": true,
   "scripts": {
     "start": "node ./bin/www",
-    "dev": "env-cmd -f ./config/dev.env nodemon ./bin/www",
-    "test": "env-cmd -f ./config/test.env jest --watch",
+    "dev": "env-cmd -e dev nodemon ./bin/www",
+    "test": "env-cmd -e test jest --watch",
     "lint": "eslint --fix --config .eslintrc.json \"**/*.js\""
   },
   "dependencies": {
@@ -15,6 +15,7 @@
     "debug": "~2.6.9",
     "express": "~4.16.1",
     "express-validator": "^6.12.1",
+    "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.13.5",
     "morgan": "~1.9.1",
     "supertest": "^6.1.4"

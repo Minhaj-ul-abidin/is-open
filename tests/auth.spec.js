@@ -61,3 +61,44 @@ describe("Signup API", () => {
       .expect(400);
   });
 });
+
+
+describe("Login API", () => {
+  test("Should login a user", async () => {
+    await User.create({
+      name: "Test user",
+      email: "test2@test.com",
+      password: "test1234",
+    });
+    await request(app)
+      .post("/api/auth/v1/login")
+      .send({
+        email: "test2@test.com",
+        password: "test1234",
+      })
+      .expect(200);
+    await User.deleteMany({
+      email: "test2@test.com",
+    });
+  });
+
+  test("Should not login with wrong email", async () => {
+    await request(app)
+      .post("/api/auth/v1/login")
+      .send({
+        email: "test2@test",
+        password: "test1234",
+      })
+      .expect(400);
+  });
+
+  test("Should not login with wrong password", async () => {
+    await request(app)
+      .post("/api/auth/v1/login")
+      .send({
+        email: "test2@test",
+        password: "test123",
+      })
+      .expect(400);
+  });
+});

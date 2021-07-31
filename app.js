@@ -1,21 +1,25 @@
-var express = require("express");
-var path = require("path");
-var cookieParser = require("cookie-parser");
-var logger = require("morgan");
+const express = require("express");
+const path = require("path");
+const cookieParser = require("cookie-parser");
+const logger = require("morgan");
+const cors = require("cors");
 
-var indexRouter = require("./routes/index");
-var usersRouter = require("./routes/users");
+const indexRouter = require("./routes/index");
+const authRouter = require("./routes/auth/v1/auth");
 
-var app = express();
+const app = express();
 
-if(process.env.NODE_ENV !== "test") {
+if (process.env.NODE_ENV !== "test") {
   app.use(logger("dev"));
 }
-app.use(express.json());
+// Init global Middlewares
+app.use(express.json({ extended: false }));
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+app.use(cors());
+app.options("*", cors());
 
 app.use("/", indexRouter);
-app.use("/users", usersRouter);
+app.use("/api/auth/v1", authRouter);
 
 module.exports = app;

@@ -1,8 +1,11 @@
 const request = require("supertest");
 const app = require("../app");
+const User = require("../models/User");
+
 
 beforeEach(async () => {
-  console.log("before Each block Ran");
+  console.log("Delete test users");
+  await User.deleteMany({ email: "test@test.com" });
 });
 
 test("should respond", async () => {
@@ -25,5 +28,36 @@ describe("Signup API", () => {
         password: "test1234",
       })
       .expect(201);
+  });
+  test("Should not signup with duplicate email", async () => {
+    await request(app)
+      .post("/api/auth/v1/signup")
+      .send({
+        name: "Test user",
+        email: "test2@test.com",
+        password: "test1234",
+      })
+      .expect(400);
+  });
+  test("Should not signup with invalid email", async () => {
+    await request(app)
+      .post("/api/auth/v1/signup")
+      .send({
+        name: "Test user",
+        email: "test3@test",
+        password: "test1234",
+      })
+      .expect(400);
+  });
+
+  test("Should not signup with invalid password", async () => {
+    await request(app)
+      .post("/api/auth/v1/signup")
+      .send({
+        name: "Test user",
+        email: "test3@test",
+        password: "1234",
+      })
+      .expect(400);
   });
 });

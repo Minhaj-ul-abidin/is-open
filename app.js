@@ -7,6 +7,7 @@ const connectDB = require("./utils/db");
 
 const indexRouter = require("./routes/index");
 const authRouter = require("./routes/auth/v1/auth");
+const restaurantRouter = require("./routes/restaurant/v1/restaurant");
 
 const app = express();
 
@@ -27,5 +28,6 @@ app.use("/", indexRouter);
 
 // routes
 app.use("/api/auth/v1", authRouter);
+app.use("/api/restaurant/v1", restaurantRouter);
 
 module.exports = app;

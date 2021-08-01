@@ -16,6 +16,20 @@ router.get("/__test", (req, res) =>
   apiResponse.successResponse(res, "restaurant collection routes working :)")
 );
 
+// @route GET /api/restrauntcollection/v1/
+// @desc get collections for signed in User
+// @access PRIVATE
+router.get("/",auth, async (req,res) => {
+  try {
+    const restCollection = await RestaurantCollection.find({user : req.user.id}).sort({date:-1});
+    console.log({restCollection});
+    return apiResponse.successResponseWithData(res,"fetched collections",restCollection);
+  } catch (err) { 
+    console.log(err);
+    return apiResponse.ErrorResponse(res, "Server Error");
+  }
+});
+
 
 // @route POST /api/restrauntcollection/v1/
 // @desc creates new collection for signed in User
@@ -31,7 +45,7 @@ router.post(
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
-      console.log(errors.errors)
+      console.log(errors.errors);
       return apiResponse.validationError(res, errors.array());
     }
 
@@ -101,7 +115,7 @@ router.put(
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
-      console.log(errors.errors)
+      console.log(errors.errors);
       return apiResponse.validationError(res, errors.array());
     }
     const { name, restaurants } = req.body;

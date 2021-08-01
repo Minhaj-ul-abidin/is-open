@@ -29,7 +29,11 @@ router.get("/", auth, async (req, res) => {
       console.log({ weekday, openAt });
     }
     const restaurants = await Restaurant.find(query).sort({ date: -1 });
-    apiResponse.successResponseWithData(res, "restraunts list", restaurants);
+    return apiResponse.successResponseWithData(
+      res,
+      "restraunts list",
+      restaurants
+    );
   } catch (err) {
     console.log(err);
     return apiResponse.ErrorResponse(res, "Server Error");

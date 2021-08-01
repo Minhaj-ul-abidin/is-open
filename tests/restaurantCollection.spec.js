@@ -107,6 +107,8 @@ describe("Test Restaurant Collection route", () => {
   });
 });
 
+
+
 describe("Test creating restaurant collection", () => {
   test("Should create a restaurant collection", async () => {
     await request(app)
@@ -142,6 +144,40 @@ describe("Test creating restaurant collection", () => {
         restaurants: test_restaurants.map((rest) => rest._id),
       })
       .expect(400);
+  });
+});
+
+describe("Test for fetching restaurant collections", () => {
+  beforeEach(async () => {
+    await request(app)
+      .post("/api/restaurantcollection/v1/")
+      .set("x-auth-token", authtoken)
+      .send({
+        name: "test_collection2",
+        restaurants: test_restaurants.map((rest) => rest._id),
+      });
+    let rest = await RestaurantCollection.findOne(
+      { name: "test_collection2" },
+      "id"
+    );
+    test_collection = rest; // used in delete test
+  });
+  afterEach(async () => {
+    await RestaurantCollection.deleteMany({ name: "test_collection1" });
+  });
+  test("should return authorization error", async () => {
+    await request(app).get("/api/restaurantcollection/v1").expect(401);
+  });
+
+  test("should return restaurants", async () => {
+    await request(app)
+      .get("/api/restaurantcollection/v1")
+      .set("x-auth-token", authtoken)
+      .expect(200)
+      .expect((res) => {
+        should.exist(res.body.data);
+        should.ok(res.body.data.length);
+      });
   });
 });
 

@@ -62,7 +62,30 @@ router.post(
   }
 );
 
+// @route    DELETE /api/restrauntcollection/v1/:id
+// @desc     Delete a post with id
+// @access   Private
+router.delete("/:id", auth, async (req, res) => {
+  try {
+    const restCollection = await RestaurantCollection.findById(req.params.id);
 
+    if (!restCollection) {
+      return apiResponse.notFoundResponse(res, "Post not found");
+    }
+
+    // Check user
+    if (restCollection.user.toString() !== req.user.id) {
+      return apiResponse.unauthorizedResponse(res, "User not authorized");
+    }
+
+    await restCollection.remove();
+
+    res.json({ msg: "Restraunt collection removed" });
+  } catch (err) {
+    console.log(err);
+    return apiResponse.ErrorResponse(res, "Server Error");
+  }
+});
 
 
 module.exports = router;

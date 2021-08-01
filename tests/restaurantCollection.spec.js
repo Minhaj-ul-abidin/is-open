@@ -9,7 +9,9 @@ const bcrypt = require("bcryptjs");
 const should = require("should");
 
 var authtoken = null;
+var authtoken2 = null;
 var user = null;
+var user2 = null;
 var test_restaurants = null;
 var test_collection = null;
 beforeAll(async () => {
@@ -41,6 +43,35 @@ beforeAll(async () => {
     }
   );
   console.log(user);
+
+
+  user2 = new User({
+    name: "Test user coll 2",
+    email: "testrestaurantcollection2@test.com",
+    password: "test1234",
+    role: "user",
+    approved: true,
+  });
+  user2.password = await bcrypt.hash("test1234", salt);
+  user2 = await user2.save();
+  const payload2 = {
+    user: {
+      id: user2.id,
+      role: user2.role,
+      approved: user2.approved,
+    },
+  };
+  jwt.sign(
+    payload2,
+    process.env.JWT_SECRET,
+    { expiresIn: "5 days" },
+    (err, token) => {
+      if (err) throw err;
+      authtoken2 = token;
+    }
+  );
+
+
   const restaurant1 = {
     name: "res1",
     timings: [
@@ -87,7 +118,7 @@ describe("Test creating restaurant collection", () => {
       })
       .expect(201);
 
-    let rest = await RestaurantCollection.find(
+    let rest = await RestaurantCollection.findOne(
       { name: "test_collection" },
       "id"
     );
@@ -114,3 +145,38 @@ describe("Test creating restaurant collection", () => {
   });
 });
 
+describe("delete restaurants collection", () => {
+  beforeEach(async () => {
+    await request(app)
+      .post("/api/restaurantcollection/v1/")
+      .set("x-auth-token", authtoken)
+      .send({
+        name: "test_collection1",
+        restaurants: test_restaurants.map((rest) => rest._id),
+      });
+    let rest = await RestaurantCollection.findOne(
+      { name: "test_collection1" },
+      "id"
+    );
+    test_collection = rest; // used in delete test
+  });
+  afterAll(async () =>{
+    await RestaurantCollection.deleteMany({ name: "test_collection1" });
+  });
+
+  
+  test("should delete restraunt collection", async () => {
+    let id = test_collection._id;
+    await request(app)
+      .delete(`/api/restaurantcollection/v1/${id}`)
+      .set("x-auth-token", authtoken)
+      .expect(200);
+  });
+  test("should not delete other users collection", async () => {
+    let id = test_collection._id;
+    await request(app)
+      .delete(`/api/restaurantcollection/v1/${id}`)
+      .set("x-auth-token", authtoken2)
+      .expect(401);
+  });
+});

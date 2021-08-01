@@ -5,7 +5,7 @@ const RestrauntCollectionSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  restraunts: [{ type: Schema.Types.ObjectId, ref: "restaurants" }],
+  restaurants: [{ type: Schema.Types.ObjectId, ref: "restaurants" }],
   user: { type: Schema.Types.ObjectId, ref: "users" },
   date: {
     type: Date,

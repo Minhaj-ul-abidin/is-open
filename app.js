@@ -29,5 +29,6 @@ app.use("/", indexRouter);
 // routes
 app.use("/api/auth/v1", authRouter);
 app.use("/api/restaurant/v1", restaurantRouter);
+app.use("/api/restaurantcollection/v1", restaurantCollectionRouter);
 
 module.exports = app;

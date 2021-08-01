@@ -8,7 +8,7 @@ const connectDB = require("./utils/db");
 const indexRouter = require("./routes/index");
 const authRouter = require("./routes/auth/v1/auth");
 const restaurantRouter = require("./routes/restaurant/v1/restaurant");
-
+const restaurantCollectionRouter = require("./routes/restaurantCollection/v1/restaurantCollection");
 const app = express();
 
 if (process.env.NODE_ENV !== "test") {

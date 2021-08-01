@@ -1,12 +1,32 @@
 const request = require("supertest");
 const app = require("../app");
 const User = require("../models/User");
+const bcrypt = require("bcryptjs");
 
+beforeAll(async () => {
+  console.log("Creating test user 2 for duplication test");
+  let user = new User({
+    name: "Test user",
+    email: "test2@test.com",
+    password: "test1234",
+    role: "user",
+    approved: true,
+  });
+  const salt = await bcrypt.genSalt(10);
+  user.password = await bcrypt.hash("test1234", salt);
+  user = await user.save();
+});
 
 beforeEach(async () => {
   console.log("Delete test users");
   await User.deleteMany({ email: "test@test.com" });
 });
+
+afterAll(async () => {
+  console.log("after all hook");
+  await User.deleteMany({ email: "test2@test.com" });
+});
+
 
 test("should respond", async () => {
   await request(app).get("/").expect(200);
@@ -65,11 +85,6 @@ describe("Signup API", () => {
 
 describe("Login API", () => {
   test("Should login a user", async () => {
-    await User.create({
-      name: "Test user",
-      email: "test2@test.com",
-      password: "test1234",
-    });
     await request(app)
       .post("/api/auth/v1/login")
       .send({
@@ -77,9 +92,6 @@ describe("Login API", () => {
         password: "test1234",
       })
       .expect(200);
-    await User.deleteMany({
-      email: "test2@test.com",
-    });
   });
 
   test("Should not login with wrong email", async () => {

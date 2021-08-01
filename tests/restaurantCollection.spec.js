@@ -160,11 +160,10 @@ describe("delete restaurants collection", () => {
     );
     test_collection = rest; // used in delete test
   });
-  afterAll(async () =>{
+  afterAll(async () => {
     await RestaurantCollection.deleteMany({ name: "test_collection1" });
   });
 
-  
   test("should delete restraunt collection", async () => {
     let id = test_collection._id;
     await request(app)
@@ -176,6 +175,57 @@ describe("delete restaurants collection", () => {
     let id = test_collection._id;
     await request(app)
       .delete(`/api/restaurantcollection/v1/${id}`)
+      .set("x-auth-token", authtoken2)
+      .expect(401);
+  });
+});
+describe("delete restaurants collection", () => {
+  beforeEach(async () => {
+    await request(app)
+      .post("/api/restaurantcollection/v1/")
+      .set("x-auth-token", authtoken)
+      .send({
+        name: "test_collection2",
+        restaurants: test_restaurants.map((rest) => rest._id),
+      });
+    let rest = await RestaurantCollection.findOne(
+      { name: "test_collection2" },
+      "id"
+    );
+    test_collection = rest; // used in delete test
+  });
+  afterAll(async () => {
+    await RestaurantCollection.deleteMany({ name: "test_collection2" });
+  });
+
+  test("should update restraunt collection", async () => {
+    let id = test_collection._id;
+    let name = "new_name";
+    let restaurants = [test_restaurants[0]._id];
+    await request(app)
+      .put(`/api/restaurantcollection/v1/${id}`)
+      .set("x-auth-token", authtoken)
+      .send({
+        name: name,
+        restaurants: restaurants,
+      })
+      .expect(201)
+      .expect((res) => {
+        should.strictEqual(res.body.data.name, name);
+        let new_id = res.body.data._id.toString();
+        should.equal(new_id, id);
+      });
+  });
+  test("should not update other users collection", async () => {
+    let id = test_collection._id;
+    let name = "new_name";
+    let restaurants = [test_restaurants[0]._id];
+    await request(app)
+      .put(`/api/restaurantcollection/v1/${id}`)
+      .send({
+        name: name,
+        restaurants: restaurants,
+      })
       .set("x-auth-token", authtoken2)
       .expect(401);
   });

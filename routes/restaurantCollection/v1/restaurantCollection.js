@@ -87,5 +87,44 @@ router.delete("/:id", auth, async (req, res) => {
   }
 });
 
+// @route    PUT /api/restrauntcollection/v1/:id
+// @desc     replace/update a collection
+// @access   Private
+router.put(
+  "/:id/",
+  auth,
+  [
+    check("name", "Name is required").not().isEmpty(),
+    check("restaurants", "list should not be empty").not().isEmpty()
+  ],
+  async (req, res) => {
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      console.log(errors.errors)
+      return apiResponse.validationError(res, errors.array());
+    }
+    const { name, restaurants } = req.body;
+    console.log({restaurants});
+    try {
+      let restCollection = await RestaurantCollection.findById(req.params.id);
+      if (!restCollection) {
+        return apiResponse.notFoundResponse(res, "Post not found");
+      }
+      // Check user
+      if (restCollection.user.toString() !== req.user.id) {
+        return apiResponse.unauthorizedResponse(res, "User not authorized");
+      }
+      restCollection.name = name;
+      restCollection.restaurants = restaurants;
+      restCollection = await restCollection.save();
+
+      return apiResponse.successCreatedResponseData(res, "Succesfull updated Restraunt Collection",restCollection);
+    } catch (err) {
+      console.log(err);
+      return apiResponse.ErrorResponse(res, "Server Error");
+    }
+  }
+);
 
 module.exports = router;

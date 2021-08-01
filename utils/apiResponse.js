@@ -23,6 +23,15 @@ exports.successCreatedResponse = function (res, msg) {
   return res.status(201).json(data);
 };
 
+exports.successCreatedResponseData = function (res, msg, data) {
+  const resData = {
+    status: 1,
+    message: msg,
+    data,
+  };
+  return res.status(201).json(resData);
+};
+
 exports.ErrorResponse = function (res, msg) {
   const data = {
     status: 0,

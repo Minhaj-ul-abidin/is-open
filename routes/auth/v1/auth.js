@@ -61,8 +61,10 @@ router.post(
         { expiresIn: "5 days" },
         (err, token) => {
           if (err) throw err;
-          apiResponse
-            .successResponseWithData(res,"Login Success" , {token});
+          apiResponse.successResponseWithData(res, "Login Success", {
+            name: user.name,
+            token,
+          });
         }
       );
     } catch (err) {

@@ -32,7 +32,9 @@
     "should": "^13.2.3"
   },
   "bugs": {
-    "url": "https://github.com/AamirAlam/o-slash-server/issues"
+    "url": "https://github.com/https://github.com/Minhaj-ul-abidin/is-open/issues"
   },
-  "homepage": "https://github.com/AamirAlam/o-slash-server#readme"
+  "engines": {
+    "node": "14.x"
+  }
 }

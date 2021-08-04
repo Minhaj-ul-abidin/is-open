@@ -72,14 +72,10 @@ describe("Test Restaurant route", () => {
 });
 
 describe("Test for fetching restaurants", () => {
-  test("should return authorization error", async () => {
-    await request(app).get("/api/restaurant/v1/").expect(401);
-  });
-
+  
   test("should return restaurants", async () => {
     await request(app)
       .get("/api/restaurant/v1/")
-      .set("x-auth-token", authtoken)
       .expect(200)
       .expect((res) => {
         should.exist(res.body.data);

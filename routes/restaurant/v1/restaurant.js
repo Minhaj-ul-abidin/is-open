@@ -15,7 +15,7 @@ router.get("/__test", (req, res) =>
 // @route GET /api/restaurant/v1/
 // @desc Get Restaurants
 // @access Private
-router.get("/", auth, async (req, res) => {
+router.get("/", async (req, res) => {
   try {
     let { name, weekday, openAt } = req.query;
     let query = {};

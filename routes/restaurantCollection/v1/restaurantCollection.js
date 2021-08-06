@@ -21,8 +21,12 @@ router.get("/__test", (req, res) =>
 // @access PRIVATE
 router.get("/",auth, async (req,res) => {
   try {
-    const restCollection = await RestaurantCollection.find({user : req.user.id}).sort({date:-1});
-    console.log({restCollection});
+    const restCollection = await RestaurantCollection.find({
+      user: req.user.id,
+    })
+      .populate("restaurants")
+      .sort({ date: -1 });
+    console.log(JSON.stringify(restCollection));
     return apiResponse.successResponseWithData(res,"fetched collections",restCollection);
   } catch (err) { 
     console.log(err);
@@ -37,10 +41,7 @@ router.get("/",auth, async (req,res) => {
 router.post(
   "/",
   auth,
-  [
-    check("name", "Name is required").not().isEmpty(),
-    check("restaurants", "list should not be empty").not().isEmpty()
-  ],
+  [check("name", "Name is required").not().isEmpty()],
   async (req, res) => {
     const errors = validationResult(req);
 
@@ -50,13 +51,15 @@ router.post(
     }
 
     const { name, restaurants } = req.body;
-    console.log({restaurants});
+    console.log({ restaurants });
     try {
       let restCollection = await RestaurantCollection.findOne({
-        name: name
+        name: name,
       });
       if (restCollection) {
-        return apiResponse.validationError(res,[{msg:"Name already exists"}]);
+        return apiResponse.validationError(res, [
+          { msg: "Name already exists" },
+        ]);
       }
       restCollection = new RestaurantCollection({
         name: name,
@@ -64,11 +67,13 @@ router.post(
         restaurants: restaurants,
       });
 
-      
-
       restCollection = await restCollection.save();
 
-      return apiResponse.successCreatedResponse(res, "Succesfull created Restraunt Collection");
+      return apiResponse.successResponseWithData(
+        res,
+        "Succesfull created Restraunt Collection",
+        restCollection
+      );
     } catch (err) {
       console.log(err);
       return apiResponse.ErrorResponse(res, "Server Error");
